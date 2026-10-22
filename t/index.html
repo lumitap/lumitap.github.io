@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f14">
+<meta name="robots" content="noindex">
+<title>LumiTap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@500;700&display=swap">
+<style>
+/* Layout: one centered mark on a dark field — a soft light ring that "lights up" while the tag resolves. */
+:root{--bg:#0d0f14;--fg:#eef1f6;--soft:#8b93a5;--glow:#7ce7d4;--glow2:#8aa8ff;--f:"Noto Sans Armenian",system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;display:grid;place-items:center;font-family:var(--f);color:var(--fg);background:var(--bg);text-align:center;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
+.box{display:flex;flex-direction:column;align-items:center;gap:18px;max-width:320px}
+.mark{position:relative;width:84px;height:84px}
+.mark::before,.mark::after{content:"";position:absolute;inset:0;border-radius:50%}
+.mark::before{background:conic-gradient(from 0deg,var(--glow),var(--glow2),transparent 70%,var(--glow));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:spin 1s linear infinite}
+.mark::after{inset:26px;background:radial-gradient(circle,var(--glow),transparent 70%);filter:blur(4px);animation:breathe 1.6s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{50%{transform:scale(1.35);opacity:.6}}
+.brand{font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--soft);font-family:system-ui,sans-serif}
+h1{margin:0;font-size:21px;font-weight:700;text-wrap:balance}
+p{margin:0;color:var(--soft);line-height:1.55}
+.idle .mark::before{animation:none;background:conic-gradient(var(--soft),var(--soft))}
+.idle .mark::after{animation:none;opacity:.25}
+@media (prefers-reduced-motion:reduce){.mark::before,.mark::after{animation:none}}
+</style>
+</head>
+<body>
+<div class="box" id="box">
+  <div class="mark" aria-hidden="true"></div>
+  <h1 id="h">Բացում եմ…</h1>
+  <p id="p"></p>
+  <div class="brand">LumiTap</div>
+</div>
+<script>
+(async () => {
+  const id = (location.search.match(/\d+/) || location.hash.match(/\d+/) || [""])[0];
+  const show = (h, p) => { document.getElementById("box").classList.add("idle"); document.getElementById("h").textContent = h; document.getElementById("p").textContent = p; };
+  if (!id) return show("Տեգի համարը չկա", "Մոտեցրեք հեռախոսը տեգին նորից։");
+  try {
+    const r = await fetch("/tags.json?v=" + Date.now(), {cache: "no-store"});
+    const tag = (await r.json())[id];
+    if (tag && tag.url) location.replace(tag.url);
+    else show("Տեգ № " + id, "Այս տեգը դեռ կարգավորված չէ։");
+  } catch (e) { show("Չստացվեց բացել", "Ստուգեք ինտերնետը ու նորից մոտեցրեք հեռախոսը։"); }
+})();
+</script>
+</body>
+</html>

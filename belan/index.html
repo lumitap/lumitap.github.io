@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b1d4e">
+<meta property="og:title" content="Բարև, ես Բելան եմ 👋">
+<meta property="og:description" content="Խնդրում եմ, զանգեք իմ հայրիկին։">
+<link rel="preload" href="robot.glb" as="fetch" type="model/gltf-binary" crossorigin>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Միաեղջյուրի քարտ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@500;700;900&display=swap">
+<style>
+/* Layout: one centered storybook card — live 3D waving unicorn on top, big message, big call buttons below. Single deliberate dusk-lavender look. */
+:root{
+  --sky:#2b1d4e; --sky2:#4a2f7a; --card:#fff8fd; --ink:#2a1840;
+  --soft:#6d5a86; --gold:#ffcf4a; --wa:#25d366;
+  --f:"Noto Sans Armenian",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0;font-family:var(--f);color:var(--ink);
+  background:radial-gradient(120% 80% at 50% 0%,var(--sky2),var(--sky) 70%);
+  background-color:var(--sky);
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:14px 32px;overflow-x:hidden;
+}
+#stars{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:440px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+.stage{position:relative;width:min(330px,88vw);max-width:100%;aspect-ratio:1/1;margin-bottom:-26px}
+.stage::before{content:"";position:absolute;inset:14% 10% 6%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,170,230,.35),rgba(150,110,255,.12) 60%,transparent);filter:blur(6px)}
+#uni3d{position:relative;width:100%;height:100%;display:block;touch-action:manipulation;cursor:pointer}
+.fallback{position:absolute;inset:8%;width:84%;height:auto}
+.fallback[hidden]{display:none}
+.music{position:absolute;top:10px;right:6px;z-index:3;width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;font-size:22px;cursor:pointer;display:grid;place-items:center;transition:transform .2s,background .2s}
+.music:active{transform:scale(.92)}
+.music:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.music.on{background:rgba(255,126,182,.45);animation:beat 1.1s ease-in-out infinite}
+@keyframes beat{50%{transform:scale(1.08)}}
+.music .x{position:absolute;width:30px;height:3px;background:#fff;border-radius:2px;transform:rotate(-45deg)}
+.music.on .x{display:none}
+.card{width:100%;background:var(--card);border-radius:28px;padding:24px 20px 20px;box-shadow:0 20px 50px rgba(10,0,30,.45);display:flex;flex-direction:column;gap:16px;text-align:center;position:relative;z-index:2}
+.hi{font-size:clamp(26px,7.5vw,34px);font-weight:900;line-height:1.15;margin:0;text-wrap:balance}
+.hi span{display:inline-block;animation:pop .6s ease-out both}
+@keyframes pop{0%{transform:scale(.6)}70%{transform:scale(1.08)}100%{transform:scale(1)}}
+.msg{margin:0;font-size:18px;font-weight:700;color:var(--soft);line-height:1.45;text-wrap:balance}
+.btns{display:flex;flex-direction:column;gap:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:64px;border-radius:20px;font-size:20px;font-weight:900;text-decoration:none;color:#fff;border:0;cursor:pointer;font-family:var(--f);transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible{outline:4px solid var(--gold);outline-offset:3px}
+.call{background:linear-gradient(135deg,#ff6aa9,#c45cff);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 8px 20px rgba(196,92,255,.4),0 0 0 0 rgba(255,106,169,.5)}50%{box-shadow:0 8px 20px rgba(196,92,255,.4),0 0 0 12px rgba(255,106,169,0)}}
+.wa{background:var(--wa);box-shadow:0 8px 20px rgba(37,211,102,.35)}
+.loc{background:#3a8bff;box-shadow:0 8px 20px rgba(58,139,255,.35)}
+.btn svg{width:26px;height:26px;flex:none}
+.num{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:#f3e8ff;border-radius:16px;padding:12px}
+.num b{font-size:24px;letter-spacing:.04em;font-variant-numeric:tabular-nums;user-select:all}
+.num small{display:block;width:100%;font-size:13px;color:var(--soft);font-weight:700}
+.copy{border:0;background:var(--ink);color:#fff;border-radius:12px;padding:8px 14px;font:700 15px var(--f);cursor:pointer}
+.copy:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.note{font-size:14px;color:var(--soft);margin:0;line-height:1.5}
+.thanks{color:#f3e8ff;font-weight:700;font-size:15px;text-align:center;margin:10px 0 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+</head>
+<body>
+<canvas id="stars"></canvas>
+<main class="wrap">
+  <div class="stage" aria-label="Ձեռքով բարևող միաեղջյուր" role="img">
+    <canvas id="uni3d"></canvas>
+    <button class="music" id="musicBtn" type="button" aria-label="Միացնել երաժշտությունը" aria-pressed="false">🎵<span class="x"></span></button>
+    <svg class="fallback" id="fallback" hidden viewBox="0 0 240 240" aria-hidden="true">
+      <ellipse cx="112" cy="178" rx="54" ry="40" fill="#fff"/>
+      <circle cx="118" cy="104" r="56" fill="#fff"/>
+      <path d="M104 52l14-46 14 46z" fill="#ffcf4a"/>
+      <circle cx="74" cy="80" r="16" fill="#ff7eb6"/><circle cx="64" cy="104" r="15" fill="#c45cff"/><circle cx="66" cy="130" r="14" fill="#4fd1ff"/>
+      <ellipse cx="104" cy="104" rx="8" ry="11" fill="#2a1840"/><ellipse cx="146" cy="104" rx="8" ry="11" fill="#2a1840"/>
+      <path d="M114 126q11 12 22 0" stroke="#2a1840" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <section class="card">
+    <h1 class="hi"><span>Բարև 👋</span><br>Ես Բելան եմ</h1>
+    <p class="msg">Ես կորել եմ 🙏 Խնդրում եմ, զանգեք իմ հայրիկին։<br>Շնորհակալություն, բարի մարդ 💜</p>
+
+    <div class="btns">
+      <a class="btn call" href="tel:+37494599202">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z"/></svg>
+        Զանգել հայրիկին
+      </a>
+      <a class="btn wa" id="waBtn" target="_blank" rel="noopener" href="https://wa.me/37494599202">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2s-1 .3-3.4-.7a11.7 11.7 0 01-4.6-4.1c-.4-.6-1.1-1.8-1.1-3.1s.7-2 1-2.2a1 1 0 01.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.4.4c-.1.2-.3.3-.1.6a8.6 8.6 0 004.2 3.6c.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.5.4a2.4 2.4 0 01-.1 1.2z"/></svg>
+        Գրել WhatsApp-ով
+      </a>
+      <a class="btn loc" id="locBtn" target="_blank" rel="noopener" href="https://wa.me/37494599202">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 00-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1114.5 9 2.5 2.5 0 0112 11.5z"/></svg>
+        Ուղարկել տեղը
+      </a>
+    </div>
+
+    <div class="num">
+      <small>Հայրիկի համարը</small>
+      <b id="numText">+374 94 599202</b>
+      <button class="copy" id="copyBtn" type="button">Պատճենել</button>
+    </div>
+
+    <p class="note" id="locNote">«Ուղարկել տեղը» սեղմելիս թույլատրեք տեղորոշումը, և քարտեզի հղումը ինքնաբերաբար կգնա հայրիկին WhatsApp-ով։</p>
+  </section>
+
+  <p class="thanks">✨ Շնորհակալություն, որ օգնում եք ✨</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+
+const PHONE = "37494599202";
+const wa = t => "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(t);
+document.getElementById("waBtn").href = wa("Բարև Ձեզ, գտել եմ Ձեր երեխային, նա ինձ մոտ է և ապահով է։");
+const locBtn = document.getElementById("locBtn"), locLabel = locBtn.lastChild;
+const locFallback = wa("Բարև Ձեզ, գտել եմ Ձեր երեխային 📍 Հիմա ուղարկում եմ, թե որտեղ ենք։");
+locBtn.href = locFallback;
+locBtn.addEventListener("click", e => {
+  if (!navigator.geolocation) return; // plain WhatsApp link as fallback
+  e.preventDefault();
+  if (locBtn.dataset.busy) return; locBtn.dataset.busy = "1";
+  locLabel.textContent = " Որոշում եմ տեղը…";
+  const done = url => { delete locBtn.dataset.busy; locLabel.textContent = " Ուղարկել տեղը"; location.href = url; };
+  navigator.geolocation.getCurrentPosition(p => {
+    const {latitude: la, longitude: lo, accuracy: ac} = p.coords;
+    const map = "https://maps.google.com/?q=" + la.toFixed(6) + "," + lo.toFixed(6);
+    done(wa("Բարև Ձեզ, գտել եմ Ձեր երեխային, նա ինձ մոտ է 🙏\n📍 Մենք այստեղ ենք՝ " + map + "\n(ճշտությունը՝ ~" + Math.round(ac) + " մ)"));
+  }, () => {
+    document.getElementById("locNote").textContent = "Տեղորոշումը չթույլատրվեց։ WhatsApp-ում սեղմեք 📎 → «Location / Местоположение»։";
+    done(locFallback);
+  }, {enableHighAccuracy: true, timeout: 12000, maximumAge: 30000});
+});
+
+const copyBtn = document.getElementById("copyBtn");
+copyBtn.addEventListener("click", () => {
+  const done = () => { copyBtn.textContent = "Պատճենվեց ✓"; setTimeout(() => copyBtn.textContent = "Պատճենել", 1800); };
+  const fallback = () => { const r = document.createRange(); r.selectNodeContents(document.getElementById("numText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  try { navigator.clipboard.writeText("+" + PHONE).then(done, fallback); } catch (e) { fallback(); }
+});
+
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- twinkling stars ---------- */
+(() => {
+  const c = document.getElementById("stars"), x = c.getContext("2d");
+  let W, H, S = [];
+  function size(){ const d = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; c.width = W*d; c.height = H*d; x.setTransform(d,0,0,d,0,0);
+    S = Array.from({length: 70}, () => ({x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.8+.4, p: Math.random()*6.3, s: Math.random()*.03+.01})); }
+  function draw(){ x.clearRect(0,0,W,H);
+    for (const s of S){ s.p += s.s; x.globalAlpha = .35 + .65*Math.abs(Math.sin(s.p)); x.fillStyle = s.r > 1.6 ? "#ffcf4a" : "#ffffff"; x.beginPath(); x.arc(s.x, s.y, s.r, 0, 7); x.fill(); }
+    if (!still) requestAnimationFrame(draw); }
+  addEventListener("resize", size); size(); draw();
+})();
+
+
+/* ---------- music box (original melody, Web Audio) ---------- */
+window.musicBox = (() => {
+  const btn = document.getElementById("musicBtn");
+  let ctx = null, master = null, on = false, timer = null, step = 0, nextT = 0, userOff = false;
+  let helloBuf = null, greeted = false, greetEnd = 0;
+  fetch("hello.mp3").then(r => r.ok ? r.arrayBuffer() : null).then(b => helloBuf = b).catch(() => {});
+  const BPM = 104, Q = 60 / BPM / 2; // eighth notes
+  const hz = n => 440 * Math.pow(2, (n - 69) / 12);
+  // original 16-bar lullaby in C major (MIDI numbers, 0 = rest), 8 eighths per bar
+  const mel = [
+    72,0,76,0,79,0,76,0,  77,0,76,74,72,0,0,0,  74,0,77,0,81,0,79,77,  76,0,0,0,79,0,0,0,
+    72,0,76,0,79,0,84,0,  83,0,81,79,77,0,79,0,  76,0,74,0,72,74,76,74,  72,0,0,0,0,0,0,0,
+    81,0,79,0,77,0,76,0,  77,0,79,0,81,0,0,0,  79,0,77,0,76,0,74,0,  76,0,77,0,79,0,0,0,
+    72,0,76,0,79,0,84,0,  83,0,81,0,79,0,77,0,  76,0,79,0,74,0,71,0,  72,0,0,0,0,0,0,0];
+  const bass = [48,55,53,48, 48,53,50,48, 53,53,48,52, 48,53,55,48];
+  function note(f, t, dur, vol, type) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .008);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + .05);
+  }
+  function bell(n, t, vol) { const f = hz(n);
+    note(f, t, 1.4, vol, "sine"); note(f * 2, t, .6, vol * .35, "sine"); note(f * 3.01, t, .25, vol * .12, "triangle"); }
+  function tick() {
+    while (nextT < ctx.currentTime + .2) {
+      const n = mel[step % mel.length];
+      if (n) bell(n, nextT, .16);
+      if (step % 8 === 0) { const b = bass[(step / 8) % bass.length]; note(hz(b), nextT, 1.8, .1, "sine"); note(hz(b + 7), nextT + Q*4, 1.2, .06, "sine"); }
+      step++; nextT += Q;
+    }
+  }
+  function start() {
+    try {
+      if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)();
+        master = ctx.createGain(); master.gain.value = .55;
+        const d = ctx.createDelay(); d.delayTime.value = Q * 3; const fb = ctx.createGain(); fb.gain.value = .25;
+        master.connect(ctx.destination); master.connect(d); d.connect(fb); fb.connect(d); d.connect(ctx.destination); }
+      ctx.resume(); nextT = Math.max(ctx.currentTime + .05, greetEnd); step = 0;
+      if (!greeted && helloBuf) {
+        greeted = true;
+        ctx.decodeAudioData(helloBuf.slice(0)).then(b => {
+          const src = ctx.createBufferSource(), g = ctx.createGain(); g.gain.value = 1.6;
+          src.buffer = b; src.connect(g); g.connect(ctx.destination);
+          const t = ctx.currentTime + .1; src.start(t);
+          greetEnd = t + b.duration + .35; nextT = Math.max(nextT, greetEnd); // song starts right after the greeting
+        }).catch(() => {});
+      }
+      clearInterval(timer); timer = setInterval(tick, 60); tick();
+      on = true; btn.classList.add("on"); btn.setAttribute("aria-pressed", "true"); btn.setAttribute("aria-label", "Անջատել երաժշտությունը");
+    } catch (e) {}
+  }
+  function stop() { clearInterval(timer); on = false; btn.classList.remove("on"); btn.setAttribute("aria-pressed", "false"); btn.setAttribute("aria-label", "Միացնել երաժշտությունը"); }
+  btn.addEventListener("click", e => { e.stopPropagation(); if (on) { stop(); userOff = true; } else { userOff = false; start(); } });
+  // always on: try right away, and start on the very first touch anywhere on the page
+  const kick = e => { if (e && btn.contains(e.target)) return; if (!on && !userOff) start(); if (ctx && ctx.state === "running") ["pointerdown","touchend","click","keydown"].forEach(ev => removeEventListener(ev, kick, true)); };
+  ["pointerdown","touchend","click","keydown"].forEach(ev => addEventListener(ev, kick, true));
+  try { start(); if (ctx.state !== "running") { on = false; clearInterval(timer); btn.classList.remove("on"); } } catch (e) {}
+  return { chime() { if (!ctx || !on) return; const t = ctx.currentTime; [84, 88, 91, 96].forEach((n, i) => bell(n, t + i * .07, .12)); } };
+})();
+/* ---------- 3D unicorn-robot hero (CC0 model "RobotExpressive" by Quaternius, recolored + horn) ---------- */
+(() => {
+  const canvas = document.getElementById("uni3d");
+  const stage = canvas.parentElement;
+  const showFallback = () => { canvas.hidden = true; document.getElementById("fallback").hidden = false; };
+  if (!window.THREE || !THREE.GLTFLoader) return showFallback();
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true}); } catch (e) { return showFallback(); }
+
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = .95;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 60);
+  camera.position.set(0, 1.7, 7.6);
+  camera.lookAt(0, 1.5, 0);
+
+  scene.add(new THREE.HemisphereLight(0xfff0ff, 0x4f3a86, 1.0));
+  const key = new THREE.DirectionalLight(0xffffff, 1.8);
+  key.position.set(3, 6, 5); key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024); key.shadow.radius = 5;
+  Object.assign(key.shadow.camera, {left: -3, right: 3, top: 4, bottom: -2, near: 1, far: 20});
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0xbfa8ff, 1.6); rim.position.set(-4, 3, -4); scene.add(rim);
+  const pinkFill = new THREE.PointLight(0xff9fd6, 0.7, 14); pinkFill.position.set(-3, 2, 3); scene.add(pinkFill);
+
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.ShadowMaterial({opacity: 0.3}));
+  ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+
+  // sparkles
+  const N = 50, pos = new Float32Array(N*3), col = new Float32Array(N*3), life = [];
+  const tex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d");
+    const gr = g.createRadialGradient(32,32,0,32,32,32); gr.addColorStop(0,"#fff"); gr.addColorStop(.25,"rgba(255,240,200,.9)"); gr.addColorStop(1,"rgba(255,200,255,0)");
+    g.fillStyle = gr; g.fillRect(0,0,64,64); g.fillStyle = "#fff"; g.fillRect(30,4,4,56); g.fillRect(4,30,56,4); return new THREE.CanvasTexture(c); })();
+  const pgeo = new THREE.BufferGeometry();
+  pgeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  pgeo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+  scene.add(new THREE.Points(pgeo, new THREE.PointsMaterial({size: .17, map: tex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false})));
+  const tint = [[1,.85,.4],[1,.6,.85],[.7,.75,1],[1,1,1]];
+  const tip = new THREE.Vector3(0, 2.6, 0);
+  let hornTip = null;
+  function spawn(i, burst) {
+    if (hornTip) hornTip.getWorldPosition(tip);
+    const a = Math.random()*6.28, rr = burst ? .3 + Math.random()*1.1 : .08 + Math.random()*.45;
+    life[i] = {x: tip.x + Math.cos(a)*rr, y: tip.y + (Math.random()-.4)*.5, z: tip.z + Math.sin(a)*rr*.6,
+      vx: (Math.random()-.5)*(burst ? .035 : .007), vy: .004 + Math.random()*(burst ? .022 : .008), t: 0, d: 60 + Math.random()*80, c: tint[i % 4]};
+  }
+  for (let i = 0; i < N; i++) { spawn(i); life[i].t = Math.random()*life[i].d; }
+
+  function resize() { const w = stage.clientWidth; renderer.setSize(w, w, false); camera.aspect = 1; camera.updateProjectionMatrix(); }
+  addEventListener("resize", resize); resize();
+
+  let lookX = 0, lookY = 0;
+  addEventListener("pointermove", e => { const b = stage.getBoundingClientRect();
+    lookX = THREE.MathUtils.clamp((e.clientX - (b.left + b.width/2)) / b.width, -1, 1);
+    lookY = THREE.MathUtils.clamp((e.clientY - (b.top + b.height*.3)) / b.height, -1, 1); }, {passive: true});
+
+  let mixer = null, actions = {}, current = null, headBone = null, face = null, model = null;
+  const clock = new THREE.Clock();
+
+  function play(name, {once = false, fade = .35} = {}) {
+    const next = actions[name]; if (!next || next === current) return next;
+    next.reset(); next.enabled = true; next.setEffectiveTimeScale(1); next.setEffectiveWeight(1);
+    if (once) { next.setLoop(THREE.LoopOnce, 1); next.clampWhenFinished = true; } else next.setLoop(THREE.LoopRepeat, Infinity);
+    if (current) current.crossFadeTo(next, fade, false);
+    next.play(); current = next; return next;
+  }
+
+  // greeting loop: wave, then idle a bit, then wave again
+  let idleTimer = 0, busy = false;
+  function greet() { busy = false; play("Wave", {once: true}); }
+
+  // tap → fun reactions
+  const reactions = ["Jump", "ThumbsUp", "Dance", "Yes"]; let ri = 0;
+  canvas.addEventListener("pointerdown", () => {
+    if (!mixer) return;
+    const name = reactions[ri++ % reactions.length];
+    busy = true; play(name, {once: name !== "Dance", fade: .2});
+    if (name === "Dance") setTimeout(greet, 3200);
+    for (let i = 0; i < N; i += 2) spawn(i, true);
+    if (window.musicBox) musicBox.chime();
+    if (face) { face.morphTargetInfluences[face.morphTargetDictionary.Surprised] = 1; }
+  });
+
+  new THREE.GLTFLoader().load("robot.glb", gltf => {
+    model = gltf.scene;
+    // normalize size
+    const box = new THREE.Box3().setFromObject(model), size = box.getSize(new THREE.Vector3());
+    const s = 2.5 / size.y; model.scale.setScalar(s);
+    model.position.y = -box.min.y * s;
+    scene.add(model);
+
+    // recolor to a pastel unicorn-bot
+    const PINK = new THREE.MeshPhysicalMaterial({color: 0xff3d9a, roughness: .35, clearcoat: 1, clearcoatRoughness: .15});
+    const PEARL = new THREE.MeshPhysicalMaterial({color: 0xc9b6ff, roughness: .3, clearcoat: 1, clearcoatRoughness: .1});
+    model.traverse(o => {
+      if (!o.isMesh) return;
+      o.castShadow = true; o.receiveShadow = true;
+      const swap = m => m.name === "Main" ? PINK : m.name === "Grey" ? PEARL : (m.roughness = .15, m);
+      o.material = Array.isArray(o.material) ? o.material.map(swap) : swap(o.material);
+      if (o.morphTargetDictionary && o.morphTargetDictionary.Surprised !== undefined) face = o;
+    });
+    headBone = model.getObjectByName("Head");
+
+    // golden horn + rainbow tuft on the head
+    model.updateMatrixWorld(true);
+    const headEnd = model.getObjectByName("Head_end") || headBone;
+    const hp = headEnd.getWorldPosition(new THREE.Vector3());
+    const hornG = new THREE.Group();
+    const GOLD = new THREE.MeshStandardMaterial({color: 0xffc94a, metalness: .85, roughness: .2, emissive: 0x6b3f00, emissiveIntensity: .4});
+    const H = .7, R = .13;
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(R, H, 40), GOLD); cone.position.y = H/2; cone.castShadow = true; hornG.add(cone);
+    for (let i = 0; i < 4; i++) { const y = .1 + i*.14, r = R*(1 - y/H) + .012;
+      const t = new THREE.Mesh(new THREE.TorusGeometry(r, .018, 10, 32), GOLD); t.position.y = y; t.rotation.set(Math.PI/2, .25, 0); hornG.add(t); }
+    hornTip = new THREE.Object3D(); hornTip.position.y = H; hornG.add(hornTip);
+    const MANE = [0xff7eb6, 0xc77dff, 0x7cc8ff, 0x6ee7c2, 0xffd166];
+    [[-.2,.06,-.1,.13],[0,.12,-.16,.15],[.2,.06,-.1,.13],[-.12,.02,-.3,.12],[.12,.02,-.3,.12]].forEach(([x,y,z,r], i) => {
+      const m = new THREE.Mesh(new THREE.SphereGeometry(r, 28, 20), new THREE.MeshPhysicalMaterial({color: MANE[i], roughness: .3, clearcoat: 1}));
+      m.position.set(x, y, z); m.castShadow = true; hornG.add(m); });
+    hornG.position.copy(hp).add(new THREE.Vector3(0, 0, .05));
+    hornG.rotation.x = .25;
+    scene.add(hornG); headEnd.attach(hornG);
+
+    mixer = new THREE.AnimationMixer(model);
+    gltf.animations.forEach(c => actions[c.name] = mixer.clipAction(c));
+    mixer.addEventListener("finished", e => {
+      if (face) face.morphTargetInfluences[face.morphTargetDictionary.Surprised] = 0;
+      play("Idle"); idleTimer = 0; busy = false;
+    });
+    play("Idle"); greet();
+  }, undefined, () => showFallback());
+
+  function frame() {
+    const dt = Math.min(clock.getDelta(), .05);
+    if (mixer) {
+      mixer.update(dt);
+      if (current === actions.Idle && !busy) { idleTimer += dt; if (idleTimer > 2.2) greet(); }
+      if (headBone) { headBone.rotation.y += lookX*.5; headBone.rotation.x += lookY*.25; }
+      model.rotation.y = Math.sin(clock.elapsedTime*.5)*.12;
+    }
+    for (let i = 0; i < N; i++) { const p = life[i]; p.t++; p.x += p.vx; p.y += p.vy; p.z += p.vx*.5;
+      if (p.t > p.d) spawn(i);
+      const f = Math.sin(Math.min(p.t/p.d, 1)*Math.PI) * (.6 + .4*Math.sin(p.t*.4));
+      pos[i*3] = p.x; pos[i*3+1] = p.y; pos[i*3+2] = p.z;
+      col[i*3] = p.c[0]*f; col[i*3+1] = p.c[1]*f; col[i*3+2] = p.c[2]*f; }
+    pgeo.attributes.position.needsUpdate = true; pgeo.attributes.color.needsUpdate = true;
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+</body>
+</html>
