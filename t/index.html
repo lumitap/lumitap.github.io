@@ -45,7 +45,7 @@ p{margin:0;color:var(--soft);line-height:1.55}
   try {
     const r = await fetch("/tags.json?v=" + Date.now(), {cache: "no-store"});
     const tag = (await r.json())[id];
-    if (tag && tag.url) location.replace(tag.url);
+    if (tag && tag.url) { const u = new URL(tag.url); if (u.host === location.host) u.searchParams.set("v", Date.now()); location.replace(u.href); }
     else show("Տեգ № " + id, "Այս տեգը դեռ կարգավորված չէ։");
   } catch (e) { show("Չստացվեց բացել", "Ստուգեք ինտերնետը ու նորից մոտեցրեք հեռախոսը։"); }
 })();
