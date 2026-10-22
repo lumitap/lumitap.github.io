@@ -44,7 +44,8 @@ p{margin:0;color:var(--soft);line-height:1.55}
   if (!id) return show("Տեգի համարը չկա", "Մոտեցրեք հեռախոսը տեգին նորից։");
   try {
     const r = await fetch("/tags.json?v=" + Date.now(), {cache: "no-store"});
-    const tag = (await r.json())[id];
+    const all = await r.json(), tag = all[id];
+    try { if (all._notify && navigator.sendBeacon) navigator.sendBeacon(all._notify, new Blob([JSON.stringify({id, name: tag && tag.name || ""})], {type: "text/plain"})); } catch (e) {}
     if (tag && tag.url) { const u = new URL(tag.url); if (u.host === location.host) u.searchParams.set("v", Date.now()); location.replace(u.href); }
     else show("Տեգ № " + id, "Այս տեգը դեռ կարգավորված չէ։");
   } catch (e) { show("Չստացվեց բացել", "Ստուգեք ինտերնետը ու նորից մոտեցրեք հեռախոսը։"); }
