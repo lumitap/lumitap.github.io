@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0f14">
 <meta name="robots" content="noindex">
-<title>Բարև, Մանուկ ախպեր</title>
+<title>Բարև, Հովո ախպեր</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;900&display=swap">
 <style>
@@ -37,7 +37,7 @@ p{margin:6px 0 0;color:var(--soft);font-size:15px;letter-spacing:.04em}
 <canvas id="fx" aria-hidden="true"></canvas>
 <main>
   <div class="wave" aria-hidden="true">👋</div>
-  <h1 id="t"><span class="w" data-t="Բարև,"></span><span class="w name" data-t="Մանուկ"></span><span class="w" data-t="ախպեր"></span></h1>
+  <h1 id="t"><span class="w" data-t="Բարև,"></span><span class="w name" data-t="Հովո"></span><span class="w" data-t="ախպեր"></span></h1>
   <p>Դիպիր էկրանին ✨</p>
 </main>
 <script>
@@ -47,7 +47,7 @@ document.querySelectorAll("#t .w").forEach(w => {
   for (const ch of w.dataset.t) { const s = document.createElement("span"); s.textContent = ch; s.style.animationDelay = (d += .045) + "s"; w.appendChild(s); }
   d += .12;
 });
-document.getElementById("t").setAttribute("aria-label", "Բարև, Մանուկ ախպեր");
+document.getElementById("t").setAttribute("aria-label", "Բարև, Հովո ախպեր");
 // confetti
 const c = document.getElementById("fx"), x = c.getContext("2d"), P = [];
 const cols = ["#7ce7d4", "#8aa8ff", "#ffcf6a", "#ff8fb8", "#ffffff"];
