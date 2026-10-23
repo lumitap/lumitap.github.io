@@ -3,85 +3,132 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0e13">
+<meta name="theme-color" content="#0a7d3c">
 <meta name="robots" content="noindex">
 <title>Վճարում</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;600;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@400;500;600;700;800;900&display=swap">
 <style>
-/* Layout: a mock payment screen that ends on a convincing "charged / confirmed" receipt (prank, no real card or money). */
-:root{--bg:#0b0e13;--card:#151a23;--fg:#eef2f8;--soft:#8b93a5;--line:#242c38;--red:#ff4d5e;--grn:#2ec77a;--f:"Noto Sans Armenian",system-ui,-apple-system,sans-serif}
+/* Layout: a realistic mobile-bank 3-D Secure payment flow that ends on a convincing receipt (prank — no real card, no money). */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#0f1b2d; --soft:#6b778c; --line:#e7ebf1;
+  --brand:#0a7d3c; --brand2:#0b9a4c; --red:#d7263d; --grn:#0a7d3c;
+  --f:"Noto Sans Armenian",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0f14;--surface:#141a22;--ink:#eef2f8;--soft:#95a0b3;--line:#232c38}}
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;display:grid;place-items:center;font-family:var(--f);color:var(--fg);background:var(--bg);overflow:hidden;
-  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
-.card{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 22px;box-shadow:0 24px 60px rgba(0,0,0,.5);text-align:center}
-.brand{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--soft);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--grn);box-shadow:0 0 10px var(--grn)}
-.amt{font-size:46px;font-weight:900;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.sub{color:var(--soft);font-size:14px;margin-top:4px}
-.spin{width:52px;height:52px;margin:22px auto 6px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--red);animation:spin .7s linear infinite}
+body{margin:0;font-family:var(--f);color:var(--ink);background:var(--bg);display:flex;flex-direction:column;min-height:100%;
+  padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.top{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;padding:18px max(16px,env(safe-area-inset-left,0px)) 20px max(16px,env(safe-area-inset-right,0px))}
+.top .r{display:flex;align-items:center;justify-content:space-between;font-size:13px;opacity:.95}
+.lock{display:flex;align-items:center;gap:6px;font-weight:600}
+.top h1{margin:14px 0 2px;font-size:15px;font-weight:600;opacity:.9}
+.top .amt{font-size:34px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.wrap{flex:1;padding:16px max(16px,env(safe-area-inset-left,0px)) 28px max(16px,env(safe-area-inset-right,0px));max-width:440px;width:100%;margin:0 auto}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.rowline{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:14px;border-bottom:1px solid var(--line)}
+.rowline:last-child{border-bottom:0}
+.rowline b{color:var(--soft);font-weight:500}
+.rowline span{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.card{display:flex;align-items:center;gap:12px}
+.chip{width:34px;height:26px;border-radius:5px;background:linear-gradient(135deg,#d9b24a,#f6e27a);position:relative;flex:none}
+.chip::after{content:"";position:absolute;inset:5px;border:1px solid rgba(0,0,0,.25);border-radius:3px}
+.cnum{font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.net{margin-left:auto;display:flex;gap:-6px}
+.net i{width:22px;height:22px;border-radius:50%;display:block}
+.net i.a{background:#eb001b}.net i.b{background:#f79e1b;margin-left:-8px;mix-blend-mode:multiply}
+.proc{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px}
+.spin{width:46px;height:46px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--brand);animation:spin .7s linear infinite;margin-bottom:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.status{min-height:22px;font-size:15px;color:var(--soft);margin-top:10px;transition:color .3s}
-.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:18px}
-.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),#ff8a3d);transition:width .2s}
-.ok{display:none}
-.done .pay{display:none}
-.done .ok{display:block;animation:pop .45s cubic-bezier(.2,.9,.3,1.4) both}
-@keyframes pop{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
-.check{width:76px;height:76px;margin:4px auto 10px;border-radius:50%;background:rgba(46,199,122,.12);display:grid;place-items:center}
-.check svg{width:42px;height:42px;stroke:var(--grn);stroke-width:3.5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s .15s forwards}
+.pstat{font-size:15px;font-weight:600;min-height:20px}
+.psub{font-size:13px;color:var(--soft);margin-top:4px}
+.bar{height:5px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:16px;width:100%}
+.bar i{display:block;height:100%;width:0;background:var(--brand);transition:width .25s}
+.hide{display:none}
+.rcpt{text-align:center;padding:8px 0 0}
+.check{width:72px;height:72px;margin:6px auto 8px;border-radius:50%;background:rgba(10,125,60,.1);display:grid;place-items:center}
+.check svg{width:40px;height:40px;stroke:var(--grn);stroke-width:3.5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .5s .15s forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
-.okt{font-size:24px;font-weight:900;color:var(--grn)}
-.rows{text-align:left;margin-top:18px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
-.row{display:flex;justify-content:space-between;gap:12px;font-size:14px}
-.row b{font-weight:600;color:var(--soft)}
-.row span{font-weight:800;font-variant-numeric:tabular-nums}
+.rok{font-size:20px;font-weight:800;color:var(--grn)}
+.ramt{font-size:30px;font-weight:900;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.rmerch{color:var(--soft);font-size:14px;margin-bottom:8px}
+.btn{display:block;width:100%;margin-top:12px;padding:14px;border:0;border-radius:13px;background:var(--brand);color:#fff;font:800 15px var(--f);cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn:active{transform:scale(.98)}
+.foot{text-align:center;color:var(--soft);font-size:11px;margin-top:14px;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.spin{animation-duration:2.5s}.check svg{animation:none;stroke-dashoffset:0}}
 </style>
 </head>
 <body>
-<div class="card" id="card">
-  <div class="pay">
-    <div class="brand"><span class="dot"></span> Secure Payment</div>
-    <div class="amt">20.000 ֏</div>
-    <div class="sub">Վճարում · **** 4417</div>
+<div class="top">
+  <div class="r"><span class="lock">🔒 3-D Secure</span><span id="clock">—</span></div>
+  <h1>Վճարման հաստատում</h1>
+  <div class="amt">20 000,00 ֏</div>
+</div>
+<div class="wrap">
+  <div class="panel">
+    <div class="rowline"><b>Ստացող</b><span>GG MARKET LLC</span></div>
+    <div class="rowline"><b>Նկարագրություն</b><span>Առցանց վճարում</span></div>
+    <div class="rowline"><b>Գումար</b><span>20 000,00 ֏</span></div>
+    <div class="rowline"><b>Միջնորդավճար</b><span>0,00 ֏</span></div>
+  </div>
+  <div class="panel card">
+    <span class="chip" aria-hidden="true"></span>
+    <span class="cnum">•••• 4417</span>
+    <span class="net" aria-hidden="true"><i class="a"></i><i class="b"></i></span>
+  </div>
+
+  <div class="panel proc" id="proc">
     <div class="spin" aria-hidden="true"></div>
-    <div class="status" id="st">Միանում ենք բանկին…</div>
+    <div class="pstat" id="pstat">Միանում ենք բանկին…</div>
+    <div class="psub" id="psub">Խնդրում ենք չփակել էջը</div>
     <div class="bar"><i id="bar"></i></div>
   </div>
-  <div class="ok">
+
+  <div class="panel rcpt hide" id="rcpt">
     <div class="check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
-    <div class="okt">Վճարումը հաստատվեց</div>
-    <div class="rows">
-      <div class="row"><b>Գումար</b><span>20.000 ֏</span></div>
-      <div class="row"><b>Քարտ</b><span>**** 4417</span></div>
-      <div class="row"><b>Ամսաթիվ</b><span id="rdate">—</span></div>
-      <div class="row"><b>Կոդ</b><span id="rid">—</span></div>
-      <div class="row"><b>Կարգավիճակ</b><span style="color:var(--grn)">Հաստատված ✓</span></div>
-    </div>
+    <div class="rok">Հաջողված վճարում</div>
+    <div class="ramt">−20 000,00 ֏</div>
+    <div class="rmerch">GG MARKET LLC</div>
+    <div class="rowline"><b>Քարտ</b><span>•••• 4417</span></div>
+    <div class="rowline"><b>Ամսաթիվ</b><span id="rdate">—</span></div>
+    <div class="rowline"><b>Հաստատման կոդ</b><span id="rauth">—</span></div>
+    <div class="rowline"><b>RRN</b><span id="rrrn">—</span></div>
+    <div class="rowline"><b>Կարգավիճակ</b><span style="color:var(--grn)">ՀԱՍՏԱՏՎԱԾ</span></div>
+    <button class="btn" type="button" onclick="this.textContent='Ուղարկված է ✓'">Ուղարկել անդորրագիրը</button>
+    <button class="btn ghost" type="button" onclick="location.reload()">Փակել</button>
   </div>
+
+  <div class="foot">Գործարքը պաշտպանված է 3-D Secure տեխնոլոգիայով։<br>Վճարումն իրականացվում է ապահով կապով 🔒</div>
 </div>
 <script>
-const card = document.getElementById("card"), st = document.getElementById("st"), bar = document.getElementById("bar");
+const tick = () => { const d = new Date(); document.getElementById("clock").textContent = d.toLocaleTimeString("hy-AM",{hour:"2-digit",minute:"2-digit"}); };
+tick(); setInterval(tick, 10000);
+const bar = document.getElementById("bar"), ps = document.getElementById("pstat"), psub = document.getElementById("psub");
 const steps = [
-  [700, "Միանում ենք բանկին…", 15],
-  [1000, "Ստուգում ենք քարտը…", 45],
-  [900, "Հաստատում ենք վճարումը…", 80],
-  [800, "Քաշվում է 20.000 ֏…", 100]
+  [900, "Միանում ենք բանկին…", "Ապահով կապ 🔒", 12],
+  [1200, "Ստուգվում է քարտը…", "•••• 4417", 38],
+  [1100, "Հաստատվում է գործարքը…", "3-D Secure", 68],
+  [1000, "Կատարվում է վճարումը…", "20 000,00 ֏", 92],
+  [700, "Ավարտվում է…", "Գրեթե պատրաստ է", 100]
 ];
 let i = 0;
-(function next() {
-  if (i >= steps.length) { setTimeout(done, 500); return; }
-  const [d, text, pct] = steps[i++];
-  st.textContent = text; if (i === steps.length) st.style.color = "var(--red)";
-  bar.style.width = pct + "%";
-  setTimeout(next, d);
+(function run(){
+  if (i >= steps.length){ setTimeout(done, 600); return; }
+  const [d, a, b, pct] = steps[i++];
+  ps.textContent = a; psub.textContent = b; bar.style.width = pct + "%";
+  if (i === steps.length) ps.style.color = "var(--brand)";
+  setTimeout(run, d);
 })();
-function done() {
-  document.getElementById("rdate").textContent = new Date().toLocaleString("hy-AM", {day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
-  document.getElementById("rid").textContent = "TXN" + Math.floor(100000 + Math.random()*900000);
-  card.classList.add("done");
+function pad(n,l){ return String(n).padStart(l,"0"); }
+function done(){
+  const d = new Date();
+  document.getElementById("rdate").textContent = d.toLocaleString("hy-AM",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+  document.getElementById("rauth").textContent = pad(Math.floor(Math.random()*1e6),6);
+  document.getElementById("rrrn").textContent = pad(Math.floor(Math.random()*1e12),12);
+  document.getElementById("proc").classList.add("hide");
+  document.getElementById("rcpt").classList.remove("hide");
 }
 </script>
 </body>
