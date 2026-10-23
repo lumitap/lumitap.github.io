@@ -331,6 +331,7 @@ window.musicBox = (() => {
       if (o.morphTargetDictionary && o.morphTargetDictionary.Surprised !== undefined) face = o;
     });
     headBone = model.getObjectByName("Head");
+    if (headBone) headBone.userData.rest = headBone.rotation.clone();   // lock reference
 
     // golden horn + rainbow tuft on the head
     model.updateMatrixWorld(true);
@@ -365,14 +366,11 @@ window.musicBox = (() => {
     if (mixer) {
       mixer.update(dt);
       if (current === actions.Idle && !busy) { idleTimer += dt; if (idleTimer > 2.2) greet(); }
-      // head always faces front — no turning or twisting, just a tiny calm bob
-      const t = clock.elapsedTime;
-      if (headBone) {
-        headBone.rotation.y += Math.sin(t * .5) * .015;   // barely perceptible
-        headBone.rotation.x += Math.sin(t * .8) * .02 - .02;
-      }
+      // head fully locked facing front — overrides the animation's head motion each frame
+      const t = clock.elapsedTime, r = headBone && headBone.userData.rest;
+      if (r) { headBone.rotation.set(r.x, r.y, r.z); }     // hard reset, no turning
       model.rotation.y = 0;                                // never spins away
-      model.position.y = Math.sin(t * 1.4) * .02;          // gentle float
+      model.position.y = Math.sin(t * 1.4) * .02;          // gentle float only
     }
     for (let i = 0; i < N; i++) { const p = life[i]; p.t++; p.x += p.vx; p.y += p.vy; p.z += p.vx*.5;
       if (p.t > p.d) spawn(i);
