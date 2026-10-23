@@ -280,7 +280,7 @@ window.musicBox = (() => {
   function resize() { const w = stage.clientWidth; renderer.setSize(w, w, false); camera.aspect = 1; camera.updateProjectionMatrix(); }
   addEventListener("resize", resize); resize();
 
-  let lookX = 0, lookY = 0;
+  let lookX = 0, lookY = 0, curX = 0, curY = 0;      // target + damped head look
   addEventListener("pointermove", e => { const b = stage.getBoundingClientRect();
     lookX = THREE.MathUtils.clamp((e.clientX - (b.left + b.width/2)) / b.width, -1, 1);
     lookY = THREE.MathUtils.clamp((e.clientY - (b.top + b.height*.3)) / b.height, -1, 1); }, {passive: true});
@@ -365,8 +365,15 @@ window.musicBox = (() => {
     if (mixer) {
       mixer.update(dt);
       if (current === actions.Idle && !busy) { idleTimer += dt; if (idleTimer > 2.2) greet(); }
-      if (headBone) { headBone.rotation.y += lookX*.5; headBone.rotation.x += lookY*.25; }
-      model.rotation.y = Math.sin(clock.elapsedTime*.5)*.12;
+      // head calmly faces the viewer, eases toward the finger, with a soft idle bob — never drifts
+      const t = clock.elapsedTime;
+      curX += (lookX - curX) * .06; curY += (lookY - curY) * .06;
+      if (headBone) {
+        headBone.rotation.y += curX * .32 + Math.sin(t * .6) * .05;
+        headBone.rotation.x += curY * .18 + Math.sin(t * .9) * .03 - .04;
+      }
+      model.rotation.y = Math.sin(t * .4) * .05;
+      model.position.y = Math.sin(t * 1.4) * .025;      // gentle float
     }
     for (let i = 0; i < N; i++) { const p = life[i]; p.t++; p.x += p.vx; p.y += p.vy; p.z += p.vx*.5;
       if (p.t > p.d) spawn(i);
