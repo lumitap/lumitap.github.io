@@ -107,15 +107,14 @@ const tick = () => { const d = new Date(); document.getElementById("clock").text
 tick(); setInterval(tick, 10000);
 const bar = document.getElementById("bar"), ps = document.getElementById("pstat"), psub = document.getElementById("psub");
 const steps = [
-  [900, "Միանում ենք բանկին…", "Ապահով կապ 🔒", 12],
-  [1200, "Ստուգվում է քարտը…", "•••• 4417", 38],
-  [1100, "Հաստատվում է գործարքը…", "3-D Secure", 68],
-  [1000, "Կատարվում է վճարումը…", "20 000,00 ֏", 92],
-  [700, "Ավարտվում է…", "Գրեթե պատրաստ է", 100]
+  [380, "Միանում ենք բանկին…", "Ապահով կապ 🔒", 20],
+  [420, "Ստուգվում է քարտը…", "•••• 4417", 50],
+  [420, "Հաստատվում է գործարքը…", "3-D Secure", 78],
+  [360, "Կատարվում է վճարումը…", "20 000,00 ֏", 100]
 ];
 let i = 0;
 (function run(){
-  if (i >= steps.length){ setTimeout(done, 600); return; }
+  if (i >= steps.length){ setTimeout(done, 200); return; }
   const [d, a, b, pct] = steps[i++];
   ps.textContent = a; psub.textContent = b; bar.style.width = pct + "%";
   if (i === steps.length) ps.style.color = "var(--brand)";
