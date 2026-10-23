@@ -6,50 +6,55 @@
 <meta name="theme-color" content="#0d0f14">
 <meta name="robots" content="noindex">
 <title>LumiTap</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@500;700&display=swap">
+<script>
+// start the lookup immediately, before anything renders
+(function () {
+  var id = (location.search.match(/\d+/) || location.hash.match(/\d+/) || [""])[0];
+  if (!id) return;
+  fetch("/tags.json?v=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (all) {
+      try { if (all._notify && navigator.sendBeacon) navigator.sendBeacon(all._notify, new Blob([JSON.stringify({ id: id })], { type: "text/plain" })); } catch (e) {}
+      var tag = all[id];
+      if (tag && tag.url) {
+        var u = new URL(tag.url);
+        if (u.host === location.host) u.searchParams.set("v", Date.now());
+        location.replace(u.href);
+      } else { window.__lt = "free"; render(); }
+    })
+    .catch(function () { window.__lt = "err"; render(); });
+  window.render = function () {
+    var b = document.getElementById("box"); if (!b) return;
+    b.classList.add("idle");
+    if (window.__lt === "free") { document.getElementById("h").textContent = "Տեգ № " + id; document.getElementById("p").textContent = "Այս տեգը դեռ կարգավորված չէ։"; }
+    else { document.getElementById("h").textContent = "Չստացվեց բացել"; document.getElementById("p").textContent = "Ստուգեք ինտերնետը ու նորից մոտեցրեք հեռախոսը։"; }
+  };
+})();
+</script>
 <style>
-/* Layout: one centered mark on a dark field — a soft light ring that "lights up" while the tag resolves. */
-:root{--bg:#0d0f14;--fg:#eef1f6;--soft:#8b93a5;--glow:#7ce7d4;--glow2:#8aa8ff;--f:"Noto Sans Armenian",system-ui,-apple-system,"Segoe UI",sans-serif}
+:root{--bg:#0d0f14;--fg:#eef1f6;--soft:#8b93a5;--a:#7ce7d4;--b:#8aa8ff;--f:system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;display:grid;place-items:center;font-family:var(--f);color:var(--fg);background:var(--bg);text-align:center;
   padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px))}
-.box{display:flex;flex-direction:column;align-items:center;gap:18px;max-width:320px}
-.mark{position:relative;width:84px;height:84px}
-.mark::before,.mark::after{content:"";position:absolute;inset:0;border-radius:50%}
-.mark::before{background:conic-gradient(from 0deg,var(--glow),var(--glow2),transparent 70%,var(--glow));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:spin 1s linear infinite}
-.mark::after{inset:26px;background:radial-gradient(circle,var(--glow),transparent 70%);filter:blur(4px);animation:breathe 1.6s ease-in-out infinite}
+.box{display:flex;flex-direction:column;align-items:center;gap:16px;max-width:300px;opacity:0;animation:in .25s .35s forwards}
+@keyframes in{to{opacity:1}}
+.ring{width:54px;height:54px;border-radius:50%;background:conic-gradient(from 0deg,var(--a),var(--b),transparent 70%,var(--a));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes breathe{50%{transform:scale(1.35);opacity:.6}}
-.brand{font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--soft);font-family:system-ui,sans-serif}
-h1{margin:0;font-size:21px;font-weight:700;text-wrap:balance}
-p{margin:0;color:var(--soft);line-height:1.55}
-.idle .mark::before{animation:none;background:conic-gradient(var(--soft),var(--soft))}
-.idle .mark::after{animation:none;opacity:.25}
-@media (prefers-reduced-motion:reduce){.mark::before,.mark::after{animation:none}}
+h1{margin:0;font-size:19px;font-weight:700}
+p{margin:0;color:var(--soft);font-size:14px;line-height:1.5}
+.brand{font-size:11px;letter-spacing:.3em;color:var(--soft)}
+.idle{animation:none;opacity:1}
+.idle .ring{display:none}
+@media (prefers-reduced-motion:reduce){.box{animation:none;opacity:1}.ring{animation-duration:2.5s}}
 </style>
 </head>
 <body>
 <div class="box" id="box">
-  <div class="mark" aria-hidden="true"></div>
+  <div class="ring" aria-hidden="true"></div>
   <h1 id="h">Բացում եմ…</h1>
   <p id="p"></p>
-  <div class="brand">LumiTap</div>
+  <div class="brand">LUMITAP</div>
 </div>
-<script>
-(async () => {
-  const id = (location.search.match(/\d+/) || location.hash.match(/\d+/) || [""])[0];
-  const show = (h, p) => { document.getElementById("box").classList.add("idle"); document.getElementById("h").textContent = h; document.getElementById("p").textContent = p; };
-  if (!id) return show("Տեգի համարը չկա", "Մոտեցրեք հեռախոսը տեգին նորից։");
-  try {
-    const r = await fetch("/tags.json?v=" + Date.now(), {cache: "no-store"});
-    const all = await r.json(), tag = all[id];
-    try { if (all._notify && navigator.sendBeacon) navigator.sendBeacon(all._notify, new Blob([JSON.stringify({id, name: tag && tag.name || ""})], {type: "text/plain"})); } catch (e) {}
-    if (tag && tag.url) { const u = new URL(tag.url); if (u.host === location.host) u.searchParams.set("v", Date.now()); location.replace(u.href); }
-    else show("Տեգ № " + id, "Այս տեգը դեռ կարգավորված չէ։");
-  } catch (e) { show("Չստացվեց բացել", "Ստուգեք ինտերնետը ու նորից մոտեցրեք հեռախոսը։"); }
-})();
-</script>
 </body>
 </html>
