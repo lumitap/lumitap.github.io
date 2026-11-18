@@ -48,13 +48,13 @@ h1 span{display:block;font-style:italic;font-weight:500;color:var(--lav)}
 .chips li:nth-child(1){animation-delay:1.4s}.chips li:nth-child(2){animation-delay:1.5s}.chips li:nth-child(3){animation-delay:1.6s}.chips li:nth-child(4){animation-delay:1.7s}
 .chips b{color:var(--gold);font-weight:700;margin-right:6px}
 
-.cta{position:relative;overflow:hidden;margin-top:30px;width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+.cta{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
   padding:19px 22px;border-radius:20px;text-decoration:none;color:#fff;font:700 17px/1 var(--sans);letter-spacing:.01em;
   background:linear-gradient(135deg,#7A4FD6 0%,var(--violet) 45%,#B23F78 100%);
   box-shadow:0 14px 34px rgba(106,73,226,.45),inset 0 1px 0 rgba(255,255,255,.25);
-  opacity:0;transform:translateY(10px);animation:rise .8s cubic-bezier(.2,.8,.2,1) 1.85s forwards;transition:transform .15s}
+  opacity:0;transform:translateY(10px);animation:rise .8s cubic-bezier(.2,.8,.2,1) .2s forwards;transition:transform .15s}
 .cta:active{transform:scale(.97)}
-.cta::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);animation:shine 3.6s ease-in-out 3s infinite}
+.cta::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);animation:shine 3.6s ease-in-out 1.2s infinite}
 .cta svg{width:24px;height:24px;flex:none}
 .handle{margin-top:12px;font:500 13px/1 var(--sans);color:var(--muted);opacity:0;animation:fade .8s 2.1s forwards}
 .handle a{color:var(--soft);text-decoration:none}
@@ -73,33 +73,10 @@ h1 span{display:block;font-style:italic;font-weight:500;color:var(--lav)}
 <body>
 <canvas id="dust" aria-hidden="true"></canvas>
 <main class="card">
-  <div class="logoWrap" aria-hidden="true">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="116" fill="#17183A"/><rect x="1.5" y="1.5" width="509" height="509" rx="114.5" fill="none" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="3"/><g transform="translate(84.5 74) scale(.67)"><g><path class="st" style="--i:0" d="M10 150 L40 164 L40 336 C112 344 196 372 252 446 L252 470 C190 404 108 382 10 376 Z" fill="#6A49E2"/>
-<path class="st" style="--i:2" d="M88 54 C162 62 222 98 250 158 L252 222 C226 166 170 128 88 116 Z" fill="#9378F2" stroke="#17183A" stroke-width="12" paint-order="stroke"/>
-<path class="st" style="--i:1" d="M60 124 C134 130 204 164 240 222 L252 428 C210 370 140 334 60 318 Z" fill="#A891F7" stroke="#17183A" stroke-width="14" paint-order="stroke"/></g><g transform="translate(512 0) scale(-1 1)"><path class="st" style="--i:0" d="M10 150 L40 164 L40 336 C112 344 196 372 252 446 L252 470 C190 404 108 382 10 376 Z" fill="#5B3DD8"/>
-<path class="st" style="--i:2" d="M88 54 C162 62 222 98 250 158 L252 222 C226 166 170 128 88 116 Z" fill="#7B5DEB" stroke="#17183A" stroke-width="12" paint-order="stroke"/>
-<path class="st" style="--i:1" d="M60 124 C134 130 204 164 240 222 L252 428 C210 370 140 334 60 318 Z" fill="#8C70F2" stroke="#17183A" stroke-width="14" paint-order="stroke"/></g></g></svg>
-  </div>
-
-  <div class="eyebrow">Gayane Torosyan</div>
-  <h1>English <span>Reading Room</span></h1>
-  <p class="motto">Let's read together</p>
-  <p class="hy">Անգլերեն՝ պատմություններով, ձայնով<br>ու գեղեցիկ ռիլսերով, ամեն օր</p>
-
-  <ul class="chips">
-    <li><b>✦</b>Stories</li>
-    <li><b>✦</b>Reading</li>
-    <li><b>✦</b>Classics</li>
-    <li><b>✦</b>A1–C1</li>
-  </ul>
-
   <a class="cta" href="https://www.instagram.com/english.readingroom/" rel="noopener">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
     Follow on Instagram
   </a>
-  <div class="handle"><a href="https://www.instagram.com/english.readingroom/" rel="noopener">@english.readingroom</a></div>
-
-  <div class="foot">LUMITAP</div>
 </main>
 <script>
 // Drifting letters and gold motes, like dust in the light of a reading lamp
